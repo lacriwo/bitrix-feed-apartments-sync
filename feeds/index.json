@@ -1,0 +1,11 @@
+{
+  "generated_at_utc": "2026-05-15T06:14:38.612695Z",
+  "projects": [
+    {
+      "slug": "yandex-kvartiry-metarealty",
+      "project_name": "sskuban_bitrix_metarealty",
+      "interval_hours": 3,
+      "feed_path": "feeds/yandex-kvartiry-metarealty.xml"
+    }
+  ]
+}
