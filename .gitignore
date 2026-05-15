@@ -4,3 +4,5 @@ Thumbs.db
 __pycache__/
 .venv/
 *.log
+transform-worker/node_modules/
+transform-worker/.wrangler/

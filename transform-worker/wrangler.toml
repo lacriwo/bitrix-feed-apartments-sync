@@ -1,0 +1,10 @@
+name = "metarealty-feed-sskuban"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+# Источник фида Битрикс (можно переопределить в Dashboard → Settings → Variables)
+[vars]
+FEED_SOURCE_URL = "https://bx.sskuban.ru/local/integrat/feed/jcat/9019077"
+# Координаты по умолчанию, если в исходном фиде нет latitude/longitude (х. Нижняя Гостагайка)
+DEFAULT_LAT = "44.9656"
+DEFAULT_LON = "37.4492"
