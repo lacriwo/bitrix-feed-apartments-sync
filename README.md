@@ -10,9 +10,22 @@
 
 Таким образом **список квартир в репозитории обновляется всякий раз, когда в Битриксе обновился фид** (с задержкой до одного интервала cron).
 
-## Публичный XML-фид для рекламы (metarealty/2024-12)
+## Публичный XML для Яндекс «Квартиры» (metarealty/2024-12), только GitHub
 
-Чтобы **не хранить** большой XML в GitHub, а отдавать внешнюю ссылку для кабинета Яндекса, разверните **Cloudflare Worker** из каталога [`transform-worker/`](transform-worker/) — он на лету тянет фид Битрикса и отдаёт преобразованный XML по HTTPS. Подробные шаги: [`transform-worker/README.md`](transform-worker/README.md).
+По тому же принципу, что в [feed-portal](https://github.com/lacriwo/feed-portal): **GitHub Actions** раз в час (см. cron в workflow) скачивает фид Битрикса, преобразует в схему `metarealty/2024-12` и коммитит результат в **`feeds/<slug>.xml`**. Репозиторий **feed-portal не меняется** — логика добавлена только сюда.
+
+1. Включите **GitHub Pages**: репозиторий → **Settings → Pages → Build and deployment → Source: Deploy from a branch**, ветка **`main`**, папка **`/` (root)**.  
+2. Убедитесь, что в **Settings → Actions → General** для workflow разрешены **Read and write** permissions (как в feed-portal).  
+3. Запустите вручную **Actions → Update XML feeds (Pages) → Run workflow** или дождитесь расписания.
+
+**Публичные ссылки после первого успешного прогона:**
+
+- через Pages: `https://lacriwo.github.io/bitrix-feed-apartments-sync/feeds/yandex-kvartiry-metarealty.xml`  
+- напрямую из ветки `main`: `https://raw.githubusercontent.com/lacriwo/bitrix-feed-apartments-sync/main/feeds/yandex-kvartiry-metarealty.xml`  
+
+Конфиг проектов: [`data/projects.json`](data/projects.json) (поля `transform`, `default_lat` / `default_lon`, `interval_hours`, `slug`). Скрипт: [`scripts/update_all_feeds.py`](scripts/update_all_feeds.py).
+
+Опционально: [Cloudflare Worker](transform-worker/) — если позже понадобится отдача без коммита XML в репозиторий.
 
 ## Подключение к сайту / приложению
 
