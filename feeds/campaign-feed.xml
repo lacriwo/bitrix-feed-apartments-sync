@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<campaign-feed xmlns="http://webmaster.yandex.ru/schemas/feed/metarealty/campaigns/2024-12">
+<generation-date>2026-05-15T12:00:00+03:00</generation-date>
+<campaign>
+<newbuilding-id>4014641</newbuilding-id>
+<cost-per-call>300000</cost-per-call>
+<phone>+78612588528</phone>
+<work-schedule>
+<timezone>Europe/Moscow</timezone>
+<pattern day-from="1" day-to="5" start-time="09:00" end-time="21:00"/>
+<pattern day-from="6" day-to="7" start-time="10:00" end-time="19:00"/>
+</work-schedule>
+</campaign>
+</campaign-feed>
