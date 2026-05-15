@@ -1,0 +1,54 @@
+name: Sync apartments from Bitrix feed
+
+on:
+  schedule:
+    # каждые 30 минут (UTC); при необходимости измените cron
+    - cron: "25,55 * * * *"
+  workflow_dispatch:
+    inputs:
+      feed_url:
+        description: "URL XML-фида (по умолчанию из секретов или константы workflow)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-apartments
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run sync
+        env:
+          BITRIX_FEED_URL: ${{ secrets.BITRIX_FEED_URL }}
+        run: |
+          if [ -n "${{ github.event.inputs.feed_url }}" ]; then
+            export FEED_URL="${{ github.event.inputs.feed_url }}"
+          elif [ -n "$BITRIX_FEED_URL" ]; then
+            export FEED_URL="$BITRIX_FEED_URL"
+          else
+            export FEED_URL="https://bx.sskuban.ru/local/integrat/feed/jcat/9019077"
+          fi
+          python scripts/sync_feed.py
+
+      - name: Commit if data changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/apartments.json data/sync_meta.json
+          if git diff --staged --quiet; then
+            echo "No changes."
+          else
+            git commit -m "chore: sync apartments from Bitrix feed"
+            git push
+          fi
