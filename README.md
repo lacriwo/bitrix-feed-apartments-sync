@@ -10,6 +10,10 @@
 
 Таким образом **список квартир в репозитории обновляется всякий раз, когда в Битриксе обновился фид** (с задержкой до одного интервала cron).
 
+## Публичный XML-фид для рекламы (metarealty/2024-12)
+
+Чтобы **не хранить** большой XML в GitHub, а отдавать внешнюю ссылку для кабинета Яндекса, разверните **Cloudflare Worker** из каталога [`transform-worker/`](transform-worker/) — он на лету тянет фид Битрикса и отдаёт преобразованный XML по HTTPS. Подробные шаги: [`transform-worker/README.md`](transform-worker/README.md).
+
 ## Подключение к сайту / приложению
 
 - Сырой JSON: `https://raw.githubusercontent.com/<ваш-логин>/bitrix-feed-apartments-sync/main/data/apartments.json` (после публикации репозитория).
