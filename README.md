@@ -12,7 +12,7 @@
 
 ## Подключение к сайту / приложению
 
-- Сырой JSON: `https://raw.githubusercontent.com/lacriwo/bitrix-feed-apartments-sync/main/data/apartments.json` (после публикации репозитория).
+- Сырой JSON: `https://raw.githubusercontent.com/<ваш-логин>/bitrix-feed-apartments-sync/main/data/apartments.json` (после публикации репозитория).
 - Либо клонируйте репозиторий / используйте GitHub API для получения того же файла.
 
 ## Настройка URL фида
