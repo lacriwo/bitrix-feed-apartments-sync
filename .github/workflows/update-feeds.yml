@@ -38,5 +38,6 @@ jobs:
             echo "No feed changes"
           else
             git commit -m "chore: update generated XML feeds"
+            git pull --rebase origin ${{ github.ref_name }}
             git push origin HEAD:${{ github.ref_name }}
           fi
