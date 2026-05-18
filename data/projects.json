@@ -5,8 +5,9 @@
       "slug": "yandex-kvartiry-metarealty",
       "source_feed_url": "https://bx.sskuban.ru/local/integrat/feed/jcat/9019077",
       "transform": "metarealty_2024_12",
-      "default_lat": "44.9656",
-      "default_lon": "37.4492",
+      "canonical_address": "Краснодарский край, округ Анапа, хутор Нижняя Гостагайка, ул. Народная",
+      "default_lat": "45.034175",
+      "default_lon": "37.343642",
       "interval_hours": 3
     }
   ]

@@ -143,9 +143,9 @@ def collect_images(offer: ET.Element) -> list[str]:
             continue
         tag = (img.attrib.get("tag") or "").strip()
         rank = 2
-        if tag == "plan":
+        if tag == "plan" or "/planers/p/" in url:
             rank = 0
-        elif "/planers/p/" in url or "/planers/floors/" in url:
+        elif "/planers/floors/" in url:
             rank = 1
         items.append((rank, url))
     items.sort(key=lambda x: (x[0], x[1]))
@@ -166,22 +166,34 @@ def build_location(
     loc: ET.Element | None,
     def_lat: str,
     def_lon: str,
+    canonical_address: str | None = None,
 ) -> tuple[dict[str, str], bool]:
     if loc is None:
         return {}, False
-    region = elem_text(first_child(loc, "region"))
-    locality = elem_text(first_child(loc, "locality-name"))
-    addr = elem_text(first_child(loc, "address"))
     apartment = elem_text(first_child(loc, "apartment"))
-    lat = elem_text(first_child(loc, "latitude")) or def_lat
-    lon = elem_text(first_child(loc, "longitude")) or def_lon
-    address = addr or ""
-    if address and region and region not in address:
-        address = f"{region}, {address}"
-    if address and locality and locality not in address:
-        address = f"{locality}, {address}"
+
+    if canonical_address:
+        address = canonical_address.strip()
+    else:
+        region = elem_text(first_child(loc, "region"))
+        locality = elem_text(first_child(loc, "locality-name"))
+        addr = elem_text(first_child(loc, "address"))
+        address = addr or ""
+        if address and region and region not in address:
+            address = f"{region}, {address}"
+        if address and locality and locality not in address:
+            address = f"{locality}, {address}"
+
     if not address:
         return {}, False
+
+    # Координаты ЖК с Яндекс Карт; не берём из Битрикса, если задан canonical_address
+    if canonical_address:
+        lat, lon = def_lat, def_lon
+    else:
+        lat = elem_text(first_child(loc, "latitude")) or def_lat
+        lon = elem_text(first_child(loc, "longitude")) or def_lon
+
     out: dict[str, str] = {"address": address, "latitude": lat, "longitude": lon}
     if apartment:
         out["apartment"] = apartment
@@ -205,6 +217,7 @@ def transform_offer(
     offer: ET.Element,
     def_lat: str,
     def_lon: str,
+    canonical_address: str | None = None,
 ) -> ET.Element | None:
     oid = offer.attrib.get("internal-id")
     if not oid:
@@ -215,7 +228,7 @@ def transform_offer(
         return None
 
     loc_el = first_child(offer, "location")
-    loc_fields, loc_ok = build_location(loc_el, def_lat, def_lon)
+    loc_fields, loc_ok = build_location(loc_el, def_lat, def_lon, canonical_address)
     if not loc_ok:
         return None
 
@@ -309,8 +322,11 @@ def build_metarealty_feed(project: dict) -> bytes:
     if not gen:
         gen = datetime.now(timezone(timedelta(hours=3))).strftime("%Y-%m-%dT%H:%M:%S+03:00")
 
-    def_lat = str(project.get("default_lat") or "44.9656")
-    def_lon = str(project.get("default_lon") or "37.4492")
+    def_lat = str(project.get("default_lat") or "45.034175")
+    def_lon = str(project.get("default_lon") or "37.343642")
+    canonical_address = project.get("canonical_address")
+    if canonical_address:
+        canonical_address = str(canonical_address).strip() or None
 
     root_out = ET.Element("realty-feed")
     root_out.set("xmlns", METAREALTY_NS)
@@ -318,7 +334,7 @@ def build_metarealty_feed(project: dict) -> bytes:
 
     skipped = 0
     for o in offers_in:
-        neo = transform_offer(o, def_lat, def_lon)
+        neo = transform_offer(o, def_lat, def_lon, canonical_address)
         if neo is None:
             skipped += 1
             continue
