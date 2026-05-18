@@ -376,6 +376,10 @@ def build_feed_for_project(project: dict) -> bytes:
 
 
 def main() -> None:
+    import os
+
+    force_refresh = os.environ.get("FORCE_REFRESH", "").lower() in ("1", "true", "yes")
+
     projects_payload = load_json(PROJECTS_FILE, {"projects": []})
     projects = projects_payload.get("projects", [])
     state = load_json(STATE_FILE, {})
@@ -387,7 +391,7 @@ def main() -> None:
         interval = int(project["interval_hours"])
 
         try:
-            if not should_refresh(slug, interval, state, now):
+            if not force_refresh and not should_refresh(slug, interval, state, now):
                 print(f"Skip {slug}: not due yet")
                 continue
 

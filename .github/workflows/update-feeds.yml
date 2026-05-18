@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: "42 * * * *"
   workflow_dispatch:
+    inputs:
+      force_refresh:
+        description: "Пересобрать все фиды, игнорируя interval_hours"
+        required: false
+        default: "false"
+        type: boolean
   push:
     paths:
       - "data/projects.json"
@@ -27,6 +33,8 @@ jobs:
           python-version: "3.12"
 
       - name: Generate feeds
+        env:
+          FORCE_REFRESH: ${{ github.event_name == 'push' && 'true' || (github.event_name == 'workflow_dispatch' && inputs.force_refresh && 'true') || '' }}
         run: python scripts/update_all_feeds.py
 
       - name: Commit and push changes
